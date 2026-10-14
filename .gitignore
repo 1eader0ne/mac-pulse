@@ -1,0 +1,7 @@
+.build/
+*.app/
+*.dmg
+*.zip
+*.png
+.DS_Store
+验证记录.md

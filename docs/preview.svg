@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="720" viewBox="0 0 1160 720">
+<rect width="1160" height="720" rx="22" fill="#f7f8fa"/>
+<g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" fill="#202a32">
+<text x="34" y="61" font-size="28" font-weight="700">轻诊 · MacPulse</text>
+<text x="34" y="90" font-size="14" fill="#687581">看清负载，让 Mac 轻下来 · 界面示意，全部为示例数据</text>
+<g fill="#fff" stroke="#e5e8eb"><rect x="30" y="120" width="356" height="135" rx="16"/><rect x="402" y="120" width="356" height="135" rx="16"/><rect x="774" y="120" width="356" height="135" rx="16"/><rect x="30" y="320" width="720" height="360" rx="16"/><rect x="770" y="285" width="360" height="395" rx="16"/></g>
+<g font-size="14" fill="#64707a"><text x="50" y="150">整机 CPU</text><text x="422" y="150">内存概况</text><text x="794" y="150">虚拟网卡</text></g>
+<g font-size="32" font-weight="600"><text x="50" y="194">24.2%</text><text x="422" y="194">32 GB</text><text x="794" y="194">28 包 / 秒</text></g>
+<g font-size="12" fill="#64707a"><text x="50" y="226">热压力正常 · 非温度读数</text><text x="422" y="226">压缩 4 GB · 交换 0 KB</text><text x="794" y="226">TUN 与物理网卡流量对比</text></g>
+<rect x="30" y="279" width="110" height="28" rx="7" fill="#187cff"/><text x="43" y="298" fill="#fff" font-size="13">全部进程</text><text x="158" y="298" font-size="13">持续高占用</text><text x="268" y="298" font-size="13">可退出应用</text>
+<g font-size="13"><text x="50" y="351">应用 / 进程</text><text x="360" y="351">CPU</text><text x="465" y="351">内存 RSS</text><text x="600" y="351">状态</text></g>
+<path d="M30 366H750" stroke="#e8eaed"/>
+<rect x="31" y="373" width="718" height="62" fill="#eaf4f5"/>
+<g font-size="15"><text x="50" y="410">示例编辑器</text><text x="360" y="410" fill="#167e85">98.2%</text><text x="465" y="410">860 MB</text><text x="600" y="410" fill="#c04a42">持续高占用</text><text x="50" y="474">示例浏览器</text><text x="360" y="474">12.6%</text><text x="465" y="474">420 MB</text><text x="600" y="474">可退出</text><text x="50" y="538">系统服务</text><text x="360" y="538">8.4% ~</text><text x="465" y="538">80 MB</text><text x="600" y="538">受保护</text></g>
+<text x="794" y="327" font-size="22" font-weight="600">示例编辑器</text><text x="794" y="356" font-size="13" fill="#64707a">当前 CPU 98.2% · 持续 24 秒</text><text x="794" y="389" font-size="13">高占用是排查线索，不等于故障。</text>
+<rect x="794" y="430" width="310" height="38" rx="8" fill="#177d84"/><text x="872" y="455" fill="#fff" font-size="15">正常退出应用</text>
+<rect x="794" y="480" width="310" height="38" rx="8" fill="#f5eceb"/><text x="887" y="505" fill="#ba4b43" font-size="15">强制结束…</text>
+<text x="794" y="551" font-size="12" fill="#64707a">强制结束需要确认，保留安装与文件。</text><text x="794" y="594" font-size="13" font-weight="600">清理前后对比</text><text x="794" y="624" font-size="13">CPU · RSS · 同应用残留进程</text>
+<text x="35" y="704" font-size="12" fill="#64707a">每 2 秒采样 · 当前用户应用可退出 · 系统服务和工具自身受保护</text>
+</g></svg>
