@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1160" height="720" viewBox="0 0 1160 720">
 <rect width="1160" height="720" rx="22" fill="#f7f8fa"/>
 <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" fill="#202a32">
-<text x="34" y="61" font-size="28" font-weight="700">轻诊 · MacPulse</text>
-<text x="34" y="90" font-size="14" fill="#687581">看清负载，让 Mac 轻下来 · 界面示意，全部为示例数据</text>
+<text x="34" y="61" font-size="28" font-weight="700">轻诊工具盒 · 运行诊断</text>
+<text x="34" y="90" font-size="14" fill="#687581">运行诊断 / 磁盘空间 · 界面示意，全部为示例数据</text>
 <g fill="#fff" stroke="#e5e8eb"><rect x="30" y="120" width="356" height="135" rx="16"/><rect x="402" y="120" width="356" height="135" rx="16"/><rect x="774" y="120" width="356" height="135" rx="16"/><rect x="30" y="320" width="720" height="360" rx="16"/><rect x="770" y="285" width="360" height="395" rx="16"/></g>
 <g font-size="14" fill="#64707a"><text x="50" y="150">整机 CPU</text><text x="422" y="150">内存概况</text><text x="794" y="150">虚拟网卡</text></g>
 <g font-size="32" font-weight="600"><text x="50" y="194">24.2%</text><text x="422" y="194">32 GB</text><text x="794" y="194">28 包 / 秒</text></g>

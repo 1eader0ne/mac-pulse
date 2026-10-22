@@ -21,4 +21,6 @@ int mp_processes(MPProcess *rows, int capacity);
 int mp_process(int32_t pid, MPProcess *row);
 int mp_networks(MPNetwork *rows, int capacity);
 MPSystem mp_system(void);
+/* System resolver, bounded in time; returns 1 for an address, 0 for timeout, -1 for error. */
+int mp_resolve_host(const char *host, int milliseconds, char *address, int capacity, int *error);
 #endif

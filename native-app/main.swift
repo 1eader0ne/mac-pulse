@@ -95,6 +95,21 @@ let args = CommandLine.arguments
 if args.contains("--test-fixture") {
     let app = NSApplication.shared; let delegate = FixtureDelegate()
     app.setActivationPolicy(.accessory); app.delegate = delegate; app.run()
+} else if args.contains("--uninstall-selftest") {
+    uninstallSelfTest()
+} else if args.contains("--uninstall-ui-selftest") {
+    uninstallUISelfTest()
+} else if args.contains("--tool-selftest") {
+    toolboxSelfTest()
+} else if args.contains("--tool-ui-selftest") {
+    toolboxUISelfTest()
+} else if args.contains("--network-probe") {
+    do { print(try NetworkHealth.run("www.apple.com", cancellation: DiskCancellation()).report) }
+    catch { print(error.localizedDescription); exit(1) }
+} else if args.contains("--disk-ui-selftest") {
+    diskUISelfTest()
+} else if args.contains("--disk-selftest") {
+    diskSelfTest()
 } else if args.contains("--selftest") {
     selfTest(args.first(where: { $0.hasPrefix("--fixture=") }).map { String($0.dropFirst(10)) })
 } else if args.contains("--probe") {

@@ -60,6 +60,13 @@ final class MetricCard: NSView {
 }
 final class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDataSource, NSTableViewDelegate, NSSearchFieldDelegate {
     var window: NSWindow!
+    let moduleHost = NSView()
+    let diagnosticsView = NSView()
+    var diskTool = DiskTool()
+    var duplicateTool = DuplicateTool()
+    var networkTool = NetworkTool()
+    var uninstallTool = UninstallTool()
+    let modules = NSSegmentedControl(labels: ["运行诊断", "磁盘空间", "重复文件", "网络健康", "应用卸载"], trackingMode: .selectOne, target: nil, action: nil)
     let table = NSTableView()
     let cpuCard = MetricCard("整机 CPU", symbol: "cpu")
     let memoryCard = MetricCard("内存概况", symbol: "memorychip")
@@ -94,13 +101,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDataSource,
         NSApp.appearance = NSAppearance(named: .aqua)
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1160, height: 810),
                           styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
-        window.title = "轻诊 · Mac 异常占用诊断"
+        window.title = "轻诊 1.4.0 · Mac 工具盒"
         window.appearance = NSAppearance(named: .aqua)
         window.contentView?.wantsLayer = true
         window.contentView?.layer?.backgroundColor = NSColor(calibratedWhite: 0.97, alpha: 1).cgColor
-        window.minSize = NSSize(width: 1060, height: 760)
+        window.minSize = NSSize(width: 1100, height: 840)
         window.backgroundColor = NSColor(calibratedWhite: 0.97, alpha: 1)
-        window.center(); constructInterface()
+        window.setContentSize(NSSize(width: 1160, height: 860))
+        window.center(); constructToolbox(); constructInterface()
+        if CommandLine.arguments.contains("--disk") { modules.selectedSegment = 1; switchModule() }
         let menu = NSMenu(); let item = NSMenuItem(); menu.addItem(item)
         let submenu = NSMenu(); submenu.addItem(withTitle: "关于轻诊", action: #selector(about), keyEquivalent: "")
         submenu.addItem(.separator()); submenu.addItem(withTitle: "退出轻诊", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
@@ -112,6 +121,34 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDataSource,
         window.makeKeyAndOrderFront(nil); NSApp.activate(ignoringOtherApps: true)
         timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in self?.sample() }
         sample()
+    }
+    func constructToolbox() {
+        guard let content = window.contentView else { return }
+        modules.selectedSegment = 0; modules.target = self; modules.action = #selector(switchModule)
+        let navigation = stack([label("轻诊工具盒", size: 14, weight: .semibold), modules, NSView(),
+                                label("1.4.0 · 原生 Mac 工具", size: 11, color: .secondaryLabelColor)], vertical: false, spacing: 20)
+        let root = stack([navigation, moduleHost], spacing: 18)
+        content.addSubview(root); root.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([root.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 24),
+                                     root.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -24),
+                                     root.topAnchor.constraint(equalTo: content.topAnchor, constant: 16),
+                                     root.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -18),
+                                     navigation.widthAnchor.constraint(equalTo: root.widthAnchor), moduleHost.widthAnchor.constraint(equalTo: root.widthAnchor)])
+        for child in [diagnosticsView, diskTool.view, duplicateTool.view, networkTool.view, uninstallTool.view] {
+            moduleHost.addSubview(child); child.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([child.leadingAnchor.constraint(equalTo: moduleHost.leadingAnchor), child.trailingAnchor.constraint(equalTo: moduleHost.trailingAnchor),
+                                         child.topAnchor.constraint(equalTo: moduleHost.topAnchor), child.bottomAnchor.constraint(equalTo: moduleHost.bottomAnchor)])
+        }
+        switchModule()
+    }
+    @objc func switchModule() {
+        diagnosticsView.isHidden = modules.selectedSegment != 0
+        diskTool.view.isHidden = modules.selectedSegment != 1
+        duplicateTool.view.isHidden = modules.selectedSegment != 2
+        networkTool.view.isHidden = modules.selectedSegment != 3
+        uninstallTool.view.isHidden = modules.selectedSegment != 4
+        if modules.selectedSegment == 4 { uninstallTool.ensureLoaded() }
+        if modules.selectedSegment == 1 { diskTool.refreshCapacity() }
     }
     func constructInterface() {
         let title = stack([label("轻诊", size: 28, weight: .bold), label("看清负载，让 Mac 轻下来", size: 13, color: .secondaryLabelColor)], spacing: 5)
@@ -166,12 +203,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDataSource,
         let export = NSButton(title: "导出诊断报告…", target: self, action: #selector(exportReport)); export.bezelStyle = .rounded
         let bottom = stack([footer, NSView(), export], vertical: false)
         let root = stack([header, cards, body, bottom], spacing: 18)
-        guard let content = window.contentView else { return }
+        let content = diagnosticsView
         content.addSubview(root); root.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([root.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 24),
-                                     root.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -24),
-                                     root.topAnchor.constraint(equalTo: content.topAnchor, constant: 20),
-                                     root.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -18)])
+        NSLayoutConstraint.activate([root.leadingAnchor.constraint(equalTo: content.leadingAnchor),
+                                     root.trailingAnchor.constraint(equalTo: content.trailingAnchor),
+                                     root.topAnchor.constraint(equalTo: content.topAnchor),
+                                     root.bottomAnchor.constraint(equalTo: content.bottomAnchor)])
         for view in [header, cards, body, bottom] { view.widthAnchor.constraint(equalTo: root.widthAnchor).isActive = true }
         cards.heightAnchor.constraint(equalToConstant: 146).isActive = true
     }
@@ -354,7 +391,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDataSource,
         }
     }
     @objc func about() {
-        let alert = NSAlert(); alert.messageText = "轻诊 1.0"
+        let alert = NSAlert(); alert.messageText = "轻诊 1.4.0 · Mac 工具盒"
         alert.informativeText = "Swift + AppKit 原生 Mac 工具。所有采样和诊断均在本机进行。高占用表示值得检查，不等于软件故障。"
         alert.runModal()
     }

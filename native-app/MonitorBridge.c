@@ -9,6 +9,50 @@
 #include <net/if_dl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dns_sd.h>
+#include <arpa/inet.h>
+#include <sys/select.h>
+#include <time.h>
+#include <errno.h>
+
+typedef struct { char *address; int capacity, found, error; } MPDNSContext;
+static void mp_dns_reply(DNSServiceRef service, DNSServiceFlags flags, uint32_t index,
+                         DNSServiceErrorType error, const char *host,
+                         const struct sockaddr *address, uint32_t ttl, void *context) {
+    MPDNSContext *c = context;
+    if (error) { c->error = error; return; }
+    if (!(flags & kDNSServiceFlagsAdd) || !address) return;
+    const void *value = address->sa_family == AF_INET ? (const void *)&((const struct sockaddr_in *)address)->sin_addr :
+                        address->sa_family == AF_INET6 ? (const void *)&((const struct sockaddr_in6 *)address)->sin6_addr : NULL;
+    if (value && inet_ntop(address->sa_family, value, c->address, (socklen_t)c->capacity)) c->found = 1;
+}
+static double mp_monotonic_seconds(void) {
+    struct timespec t; clock_gettime(CLOCK_MONOTONIC, &t); return (double)t.tv_sec + (double)t.tv_nsec / 1e9;
+}
+int mp_resolve_host(const char *host, int milliseconds, char *address, int capacity, int *error) {
+    if (!host || !address || capacity < INET6_ADDRSTRLEN || !error) return -1;
+    address[0] = 0; *error = 0;
+    MPDNSContext c = {address, capacity, 0, 0};
+    DNSServiceRef service = NULL;
+    DNSServiceErrorType initial = DNSServiceGetAddrInfo(&service, 0, 0,
+        kDNSServiceProtocol_IPv4 | kDNSServiceProtocol_IPv6, host, mp_dns_reply, &c);
+    if (initial) { *error = initial; return -1; }
+    int fd = DNSServiceRefSockFD(service);
+    if (fd < 0 || fd >= FD_SETSIZE) { DNSServiceRefDeallocate(service); *error = -1; return -1; }
+    double deadline = mp_monotonic_seconds() + (double)milliseconds / 1000.0;
+    while (!c.found && mp_monotonic_seconds() < deadline) {
+        fd_set fds; FD_ZERO(&fds); FD_SET(fd, &fds);
+        struct timeval interval = {0, 50000};
+        int ready = select(fd + 1, &fds, NULL, NULL, &interval);
+        if (ready < 0) { if (errno == EINTR) continue; c.error = errno; break; }
+        if (ready > 0) {
+            DNSServiceErrorType e = DNSServiceProcessResult(service);
+            if (e) { c.error = e; break; }
+        }
+    }
+    DNSServiceRefDeallocate(service); *error = c.error;
+    return c.found ? 1 : c.error ? -1 : 0;
+}
 
 int mp_process(int32_t pid, MPProcess *row) {
     struct proc_bsdinfo b = {0};
