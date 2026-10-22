@@ -422,4 +422,5 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSTableViewDataSource,
         if let png = rep.representation(using: .png, properties: [:]) { try png.write(to: URL(fileURLWithPath: path)) }
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
+    func applicationWillTerminate(_ notification: Notification) { networkTool.capture.shutdown() }
 }

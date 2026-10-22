@@ -7,7 +7,7 @@ MACPULSE_APP="${MACPULSE_APP_DIR:-$MACPULSE_ROOT/轻诊.app}"
 mkdir -p "$MACPULSE_BUILD" "$MACPULSE_APP/Contents/MacOS" "$MACPULSE_APP/Contents/Resources"
 xcrun clang -O2 -target arm64-apple-macos12.0 -c MonitorBridge.c -o "$MACPULSE_BUILD/MonitorBridge.o"
 xcrun swiftc -O -swift-version 5 -module-cache-path "$MACPULSE_BUILD/ModuleCache" -target arm64-apple-macos12.0 -import-objc-header MonitorBridge.h \
-  Monitor.swift DiskCleaner.swift DiskInterface.swift DiskTests.swift DuplicateFinder.swift NetworkHealth.swift ToolInterfaces.swift ToolTests.swift AppUninstaller.swift UninstallInterface.swift UninstallTests.swift Interface.swift main.swift "$MACPULSE_BUILD/MonitorBridge.o" -o "$MACPULSE_APP/Contents/MacOS/MacPulse"
+  Monitor.swift DiskCleaner.swift DiskInterface.swift DiskTests.swift DuplicateFinder.swift NetworkHealth.swift CaptureTemporaryFiles.swift PacketCapture.swift PacketCaptureInterface.swift PacketCaptureTests.swift ToolInterfaces.swift ToolTests.swift AppUninstaller.swift UninstallInterface.swift UninstallTests.swift Interface.swift main.swift "$MACPULSE_BUILD/MonitorBridge.o" -o "$MACPULSE_APP/Contents/MacOS/MacPulse"
 cp Info.plist "$MACPULSE_APP/Contents/Info.plist"
 xcrun swiftc -module-cache-path "$MACPULSE_BUILD/ModuleCache" Icon.swift -o "$MACPULSE_BUILD/Icon"
 "$MACPULSE_BUILD/Icon" "$MACPULSE_BUILD/icon.png"

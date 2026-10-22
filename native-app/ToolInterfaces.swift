@@ -192,6 +192,9 @@ final class DuplicateTool: NSObject, NSTableViewDataSource, NSTableViewDelegate 
 
 final class NetworkTool: NSObject, NSTableViewDataSource, NSTableViewDelegate {
     let view = NSView(), table = NSTableView()
+    let healthView = NSView(), contentHost = NSView()
+    let modes = NSSegmentedControl(labels: ["连接检查", "网络抓包"], trackingMode: .selectOne, target: nil, action: nil)
+    let capture = PacketCaptureTool()
     let target = NSTextField(string: "www.apple.com")
     let preset = NSPopUpButton()
     let startButton = NSButton(title: "开始检查", target: nil, action: nil)
@@ -231,9 +234,19 @@ final class NetworkTool: NSObject, NSTableViewDataSource, NSTableViewDelegate {
             scroll, detail,
             label("一个网站不可达不代表整个网络故障。可换目标复测；请求可能经过系统代理 / VPN。总耗时包含 DNS、代理和握手，不是网速。", size: 11, color: accent),
             stack([status, NSView(), NSButton(title: "复制检查报告", target: self, action: #selector(copyReport))], vertical: false)
-        ], spacing: 15), in: view)
+        ], spacing: 15), in: healthView)
+        modes.selectedSegment = 0; modes.target = self; modes.action = #selector(switchMode)
+        for child in [healthView, capture.view] {
+            contentHost.addSubview(child); child.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([child.leadingAnchor.constraint(equalTo: contentHost.leadingAnchor),
+                child.trailingAnchor.constraint(equalTo: contentHost.trailingAnchor), child.topAnchor.constraint(equalTo: contentHost.topAnchor),
+                child.bottomAnchor.constraint(equalTo: contentHost.bottomAnchor)])
+        }
+        fillTool(stack([modes, contentHost], spacing: 14), in: view)
+        switchMode()
         update()
     }
+    @objc func switchMode() { healthView.isHidden = modes.selectedSegment != 0; capture.view.isHidden = modes.selectedSegment != 1 }
     deinit { cancellation?.cancel() }
     func update() {
         startButton.isEnabled = !busy; target.isEnabled = !busy; preset.isEnabled = !busy; cancelButton.isEnabled = busy

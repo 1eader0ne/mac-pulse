@@ -21,6 +21,8 @@ if xattr -p com.apple.FinderInfo "$MACPULSE_FIXTURE" >/dev/null 2>&1; then xattr
 codesign --force --sign - "$MACPULSE_FIXTURE"
 "$MACPULSE_APP/Contents/MacOS/MacPulse" --uninstall-selftest
 "$MACPULSE_APP/Contents/MacOS/MacPulse" --uninstall-ui-selftest
+"$MACPULSE_APP/Contents/MacOS/MacPulse" --packet-selftest
+"$MACPULSE_APP/Contents/MacOS/MacPulse" --packet-ui-selftest
 "$MACPULSE_APP/Contents/MacOS/MacPulse" --tool-selftest
 "$MACPULSE_APP/Contents/MacOS/MacPulse" --tool-ui-selftest
 "$MACPULSE_APP/Contents/MacOS/MacPulse" --disk-selftest

@@ -101,6 +101,12 @@ if args.contains("--test-fixture") {
     uninstallUISelfTest()
 } else if args.contains("--tool-selftest") {
     toolboxSelfTest()
+} else if args.contains("--packet-selftest") {
+    packetCaptureSelfTest()
+} else if let fixture = args.first(where: { $0.hasPrefix("--capture-residue-fixture=") }) {
+    captureResidueFixture(String(fixture.dropFirst("--capture-residue-fixture=".count)))
+} else if args.contains("--packet-ui-selftest") {
+    packetCaptureUISelfTest()
 } else if args.contains("--tool-ui-selftest") {
     toolboxUISelfTest()
 } else if args.contains("--network-probe") {
@@ -122,6 +128,7 @@ if args.contains("--test-fixture") {
     if let data = try? JSONSerialization.data(withJSONObject: output, options: [.prettyPrinted, .sortedKeys]), let text = String(data: data, encoding: .utf8) { print(text) }
 } else {
     let app = NSApplication.shared; let delegate = AppDelegate()
+    delegate.networkTool.capture.cleanupStaleCaptures()
     app.setActivationPolicy(.regular); app.delegate = delegate
     if let option = args.first(where: { $0.hasPrefix("--snapshot=") }) {
         let path = String(option.dropFirst(11))
